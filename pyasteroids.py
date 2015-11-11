@@ -1,119 +1,51 @@
+''' This is the main program, it calls all the functions, when
+    the game is over it returns to this function.               '''
+
 import pygame
+# Import char to pass a new char into game()
 from char import char
-from proj import proj
-from roid import roid
+from game import game
+import os.path
 
+# Define an ini file
+def ini(width, height):
+    with open('asteroids.py') as conf:
+        lines = conf.readlines()
+    lines[0].replace('res:')
+    lines[1].replace('width=' + str(width))
+    lines[2].replace('height=' + str(height))
 
-# Define Global Variables
-SCREEN_WIDTH = 1028
-SCREEN_HEIGHT = 724
-
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
- 
-pygame.init()
- 
-# Set the width and height of the screen [width, height]
-size = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(size)
-
-# Set the Window Name
-pygame.display.set_caption("PyAsteroids")
-
-# Initialize Character Variables
-
-char = char(size, 'triangle.png', .05, 2)
-roids = []
-for x in range(0,4):
-    ro = roid(3, size, False, char.loc)
-    roids.append(ro)
+# Define the method
+def main():
+    # Get ini file. This includes, primarily screen resolution:
+    if os.path.isfile('asteroids.ini'):
+        conf = open('asreroids.ini', 'r+w')
+        switch = conf.readline()
+        if switch == 'res:':
+            w = conf.readline()
+            w = w.split('=')
+            width = w[1]
+            h = conf.readline()
+            h = h.split('=')
+            height = h[1]
+        # If the ini file isn't formatted properly, give a dialog box
+        # and ask them if they'd like to create a valid ini file
+        else:
+            # TODO
+    # If there is no ini file, create one
+    else:
+        ini(800,600)
+        width = 800
+        height = 600
     
-projs = []
+    # Start pygame
+    pygame.init()
 
-# Define Functions
-
-# Loop until the user clicks the close button.
-done = False
- 
-# Used to manage how fast the screen updates
-clock = pygame.time.Clock()
- 
-# -------- Main Program Loop -----------
-while not done:
-    # --- Main event loop
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-        # --- Handle Input
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                done = True
-            if event.key == pygame.K_UP:
-                char.thrusters()
-            if event.key == pygame.K_LEFT:
-                char.rotate_on(1)
-            if event.key == pygame.K_RIGHT:
-                char.rotate_on(-1)
-            if event.key == pygame.K_SPACE:
-                projs.append(char.fire())
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP:
-                char.thrusters_off()
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                char.rotate_off()
-    # --- Game logic should go here
-    char.accelerate()
-    char.rotate()
-    char.move()
-    if char.loc[0] < 0:
-        char.loc[0] += SCREEN_WIDTH
-    elif char.loc[0] > SCREEN_WIDTH:
-        char.loc[0] -= SCREEN_WIDTH
-    if char.loc[1] < 0:
-        char.loc[1] += SCREEN_HEIGHT
-    elif char.loc[1] > SCREEN_HEIGHT:
-        char.loc[1] -= SCREEN_HEIGHT
+    # Define the screen
+    size = (width, height)
+    screen = pygame.display.set_mode(size)
+    # Window name
+    pygame.display.set_caption("PyAsteroids")
     
-    for roid in roids:
-        roid.move()
-        if roid.loc[0] < 0:
-            roid.loc[0] += SCREEN_WIDTH
-        elif roid.loc[0] > SCREEN_WIDTH:
-            roid.loc[0] -= SCREEN_WIDTH
-        if roid.loc[1] < 0:
-            roid.loc[1] += SCREEN_HEIGHT
-        elif roid.loc[1] > SCREEN_HEIGHT:
-            roid.loc[1] -= SCREEN_HEIGHT
-    for proj in projs[:]:
-        proj.move()
-        if proj.loc[0] < 0:
-            proj.loc[0] += SCREEN_WIDTH
-        elif proj.loc[0] > SCREEN_WIDTH:
-            proj.loc[0] -= SCREEN_WIDTH
-        if proj.loc[1] < 0:
-            proj.loc[1] += SCREEN_HEIGHT
-        elif proj.loc[1] > SCREEN_HEIGHT:
-            proj.loc[1] -= SCREEN_HEIGHT
-        for roid in roids[:]:
-            if proj.rect.colliderect(roid.rect):
-                projs.remove(proj)
-                roids.remove(roid)
-                n = roid.explode([SCREEN_WIDTH, SCREEN_HEIGHT])
-                for r in n:
-                    roids.append(r)
-                break        
-    # --- Drawing code should go here
-    screen.fill(BLACK)
-    for roid in roids:
-        roid.draw(screen)
-    for proj in projs:
-        proj.draw(screen)
-    char.draw(screen)
-    # --- Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
- 
-    # --- Limit to 60 frames per second
-    clock.tick(60)
- 
-pygame.quit()
+    while 
+
