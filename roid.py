@@ -3,7 +3,7 @@
 
 import pygame
 from random import randint
-from math import sin, cos, radians, hypot
+from math import sin, cos, radians, hypot, atan, pi
 from game_object import game_object
 from os.path import join as file
 
@@ -14,6 +14,7 @@ class roid(game_object):
         self.angle = randint(0,360)
         self.scale = scale
         vel = (4-size)
+        print(vel)
         ang = radians(self.angle)
         i_value = cos(ang)
         j_value = sin(ang)
@@ -28,6 +29,7 @@ class roid(game_object):
                 self.im = pygame.transform.scale(image,
                         [100 * scale[0], 100 * scale[1]]).convert_alpha()
             self.score = 20
+            self.mass = 9
         elif size == 2:
             if scale == [1, 1]:
                 self.im = image.convert_alpha()
@@ -35,6 +37,7 @@ class roid(game_object):
                 self.im = pygame.transform.scale(image,
                         [50 * scale[0], 50 * scale[1]]).convert_alpha()
             self.score = 50
+            self.mass = 3
         elif size == 1:
             if scale == [1, 1]:
                 self.im = pygame.transform.scale(image,
@@ -43,6 +46,7 @@ class roid(game_object):
                 self.im = pygame.transform.scale(image,
                         [25 * scale[0], 25 * scale[1]]).convert_alpha()
             self.score = 100
+            self.mass = 1
         self.rect = self.im.get_rect()
         self.mask = pygame.mask.from_surface(self.im)
         self.mask.fill()
@@ -60,8 +64,8 @@ class roid(game_object):
                     self.loc = [local_x,local_y]
                     break
         else:
-            loc[0] = loc[0] + randint(-10,10)
-            loc[1] = loc[1] + randint(-10,10)
+            loc[0] = loc[0] + randint(-10, 10)
+            loc[1] = loc[1] + randint(-10, 10) 
             self.loc = loc
             self.wrap(screensize)
     
@@ -76,7 +80,63 @@ class roid(game_object):
     # Return the score of the asteroid
     def score(self):
         return self.score
+    
+    # These functions return and set information for collision
+    def get_vel(self):
+        return self.vel
+    def get_vel_hat(self):
+        vel_mag = hypot(self.vel[0], self.vel[1])
+        vel_hat = [self.vel[0]/vel_mag, self.vel[1]/vel_mag]
+        return vel_hat
+    def get_mass(self):
+        return self.mass
+    def set_vel(self, vel):
+        self.vel = vel
+    def get_rvect(self,point):
+        c = self.mask.centroid()
+        angle_vector = [c[0] - point[0], c[1] - point[1]]
+        return angle_vector
 
+    # Bouncy Asteroids!!! This function is designed to handle the elastic
+    # collisions involved between two asteroids.
+    def elastic_collision(self, roid, point):
+        m_1 = self.get_mass()
+        m_2 = roid.get_mass()
+        vel_1 = self.get_vel()
+        vel_2 = roid.get_vel()
+        rad_1 = self.get_rvect(point)
+        rmag_1 = hypot(rad_1[0], rad_1[1])
+        rhat_1 = [rad_1[0] / rmag_1, rad_1[1] / rmag_1]
+        rad_2 = roid.get_rvect(point)
+        rmag_2 = hypot(rad_2[0], rad_2[1])
+        rhat_2 = [rad_2[0] / rmag_2, rad_2[1] / rmag_2]
+
+        mom_1 = [vel_1[0] * m_1, vel_1[1] * m_1]
+        mom_2 = [vel_2[0] * m_2, vel_2[1] * m_2]
+
+        mom_1fax = ((rhat_2[0] * mom_2[0]) +
+                (rhat_2[1] * mom_2[1])) * rhat_2[0]
+        mom_1fay = ((rhat_2[0] * mom_2[0]) +
+                (rhat_2[1] * mom_2[1])) * rhat_2[1]
+        mom_2fb = [mom_2[0] - mom_1fax, mom_2[1] - mom_1fay]
+
+        mom_2fax = ((rhat_1[0] * mom_1[0]) +
+                (rhat_1[1] * mom_1[1])) * rhat_1[0]
+        mom_2fay = ((rhat_1[0] * mom_1[0]) +
+                (rhat_1[1] * mom_1[1])) * rhat_1[1]
+        mom_1fb = [mom_1[0] - mom_2fax, mom_1[1] - mom_2fay]
+
+        mom_2f = [mom_2fb[0] + mom_2fax, mom_2fb[1] + mom_2fay]
+        mom_1f = [mom_1fb[0] + mom_1fax, mom_1fb[1] + mom_1fay]
+        
+        vel_1f = [mom_1f[0] / m_1, mom_1f[1] / m_1]
+        vel_2f = [mom_2f[0] / m_2, mom_2f[1] / m_2]
+
+        print(vel_2f)
+        print(vel_1f)
+
+        roid.set_vel(vel_2f)
+        self.set_vel(vel_1f)
 
 
 

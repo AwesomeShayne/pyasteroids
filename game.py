@@ -78,8 +78,15 @@ def game(screen, char, level):
         char.accelerate()
         char.rotate()
         char.move(size)
+        i = 0
         for roid in roids:
+            i += 1
             roid.move(size)
+            for r in roids:
+                if r != roids[i:]:
+                    if pygame.sprite.collide_mask(roid, r) != None:
+                        p = pygame.sprite.collide_mask(roid, r)
+                        roid.elastic_collision(r,p)
             if pygame.sprite.collide_mask(roid, char) != None:
                 if char.hit():
                     if char.lives_left():
@@ -102,6 +109,9 @@ def game(screen, char, level):
                         break       
             else:
                 projs.remove(proj)
+        if not roids:
+            done = True
+            game(screen, char, level+1)
         score = char.get_score()
         fuel = char.get_fuel()
         font = pygame.font.Font(None, 36)        
@@ -124,5 +134,4 @@ def game(screen, char, level):
         clock.tick(60)
     
     pygame.quit()
-
-game(screen,char, 1)
+game(screen, char, 1)
