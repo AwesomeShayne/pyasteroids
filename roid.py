@@ -3,7 +3,7 @@
 
 import pygame
 from random import randint
-from math import sin, cos, radians, hypot, atan, pi
+from math import sin, cos, radians, hypot, atan, pi, pow
 from game_object import game_object
 from os.path import join as file
 
@@ -14,7 +14,6 @@ class roid(game_object):
         self.angle = randint(0,360)
         self.scale = scale
         vel = (4-size)
-        print(vel)
         ang = radians(self.angle)
         i_value = cos(ang)
         j_value = sin(ang)
@@ -104,13 +103,15 @@ class roid(game_object):
         m_2 = roid.get_mass()
         vel_1 = self.get_vel()
         vel_2 = roid.get_vel()
+        vmag_1 = hypot(vel_1[0], vel_1[1])
+        vmag_2 = hypot(vel_1[0], vel_1[1])
         rad_1 = self.get_rvect(point)
         rmag_1 = hypot(rad_1[0], rad_1[1])
         rhat_1 = [rad_1[0] / rmag_1, rad_1[1] / rmag_1]
         rad_2 = roid.get_rvect(point)
         rmag_2 = hypot(rad_2[0], rad_2[1])
         rhat_2 = [rad_2[0] / rmag_2, rad_2[1] / rmag_2]
-
+            
         mom_1 = [vel_1[0] * m_1, vel_1[1] * m_1]
         mom_2 = [vel_2[0] * m_2, vel_2[1] * m_2]
 
@@ -131,9 +132,15 @@ class roid(game_object):
         
         vel_1f = [mom_1f[0] / m_1, mom_1f[1] / m_1]
         vel_2f = [mom_2f[0] / m_2, mom_2f[1] / m_2]
+        
+        vmag_1f = hypot(vel_1f[0], vel_1f[1])
+        vmag_2f = hypot(vel_2f[0], vel_2f[1])
 
-        print(vel_2f)
-        print(vel_1f)
+        KE1 = m_1 * pow(vmag_1, 2) + m_2 * pow(vmag_2, 2)
+        KE2 = m_1 * pow(vmag_1f, 2) + m_2 * pow(vmag_2, 2)
+        
+        print(KE1)
+        print(KE2)
 
         roid.set_vel(vel_2f)
         self.set_vel(vel_1f)

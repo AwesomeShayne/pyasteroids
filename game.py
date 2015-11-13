@@ -78,13 +78,12 @@ def game(screen, char, level):
         char.accelerate()
         char.rotate()
         char.move(size)
-        i = 0
         for roid in roids:
-            i += 1
             roid.move(size)
             for r in roids:
-                if r != roids[i:]:
+                if r != roid:
                     if pygame.sprite.collide_mask(roid, r) != None:
+                        print(str(pygame.sprite.collide_mask(roid, r)))
                         p = pygame.sprite.collide_mask(roid, r)
                         roid.elastic_collision(r,p)
             if pygame.sprite.collide_mask(roid, char) != None:

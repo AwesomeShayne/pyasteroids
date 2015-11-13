@@ -50,7 +50,7 @@ class char(game_object):
     # This handles stopping thrust
     def thrusters_off(self):
         self.acc = 0
-        self.consumption += 0 
+        self.consumption = 0 
         
     # This handles acceleration, taking into account angle
     # and applying the force in the proper direction. This also
@@ -121,6 +121,15 @@ class char(game_object):
                 (165 < self.invuln_timer < 180)):
             screen.blit(rot_image, new_loc)
         self.fuelbar.draw(screen)
+        life_dist = 15 * self.scale[0]
+        for x in range(0, self.lives):
+            life_x = (x * life_dist + 10*self.scale[0])
+            life_y = (25 * self.scale[1])
+            life_loc = [life_x, life_y]
+            life_surf = pygame.transform.scale(self.im,
+                    [10 * self.scale[0], 10 * self.scale[1]])
+            screen.blit(life_surf, life_loc)
+
 
     # Checks for invulnerability and 
     def hit(self):
@@ -147,7 +156,9 @@ class char(game_object):
         self.loc[1] = size[1]/2
         self.angle = 0
         self.fuel = 1000
+        self.consumption = 0
         self.fuelbar.set_current(1000)
+        self.fuelbar.update_bar()
 
     # This keeps track of the score requirements for more lives
     def get_life_score(self):

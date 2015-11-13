@@ -41,6 +41,8 @@ class game_object(pygame.sprite.Sprite):
                 self.loc[1] - self.rect.height / 2]
         self.mask = pygame.mask.from_surface(rot_image)
         screen.blit(rot_image, new_loc)
+        #pygame.draw.rect(screen, [255, 255, 255], self.rect)
+        self.wrap_draw(screen, rot_image, new_loc)
 
     # Defined for screen wrapping purposes:
     def wrap(self, screen):
@@ -52,3 +54,22 @@ class game_object(pygame.sprite.Sprite):
             self.loc[1] += screen[1]
         elif self.loc[1] > screen[1]:
             self.loc[1] -= screen[1]
+
+    # Wrap for physics' sake
+    def wrap_draw(self, screen, image, loc):
+        sheight = image.get_rect().height
+        swidth = image.get_rect().width
+        
+        height = screen.get_rect().height
+        width = screen.get_rect().width
+        
+        temploc = loc[:]
+        if loc[0] - swidth / 2 < 0:
+            temploc = [width + swidth/2 - loc[0], loc[1]]
+        elif loc[0] + swidth / 2 > width:
+            temploc = [ -swidth/2 + width - loc[0], loc[1]]
+        if loc[1] - sheight / 2 < 0:
+            temploc = [loc[0], height + sheight / 2 - loc[1]]
+        elif loc[1] + sheight / 2 > height :
+            temploc = [loc[0], -sheight/2 + width - loc[0]]
+        screen.blit(image, temploc)
