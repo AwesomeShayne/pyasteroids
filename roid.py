@@ -27,6 +27,7 @@ class roid(game_object):
             else:
                 self.im = pygame.transform.scale(image,
                         [100 * scale[0], 100 * scale[1]]).convert_alpha()
+            self.radius = hypot(50 * scale[0], 50 * scale[1])
             self.score = 20
             self.mass = 9
         elif size == 2:
@@ -35,6 +36,7 @@ class roid(game_object):
             else:
                 self.im = pygame.transform.scale(image,
                         [50 * scale[0], 50 * scale[1]]).convert_alpha()
+            self.radius = hypot(25 * scale[0], 25 * scale[1])
             self.score = 50
             self.mass = 3
         elif size == 1:
@@ -44,6 +46,7 @@ class roid(game_object):
             else:
                 self.im = pygame.transform.scale(image,
                         [25 * scale[0], 25 * scale[1]]).convert_alpha()
+            self.radius = hypot(12.5 * scale[0], 12.5 * scale[1]) 
             self.score = 100
             self.mass = 1
         self.rect = self.im.get_rect()
@@ -111,20 +114,35 @@ class roid(game_object):
         rad_2 = roid.get_rvect(point)
         rmag_2 = hypot(rad_2[0], rad_2[1])
         rhat_2 = [rad_2[0] / rmag_2, rad_2[1] / rmag_2]
-            
+        offset = [int(roid.loc[0]) -  int(self.loc[0]),
+                int(roid.loc[1]) - int(self.loc[1])]
+        offdist = hypot(offset[0], offset[1])
+        overlap = self.mask.overlap_area(roid.mask, offset)
+        print(offdist)
+        nx = (self.mask.overlap_area(roid.mask, (offset[0] + 1, offset[1])) -
+                self.mask.overlap_area(roid.mask, (offset[0] - 1, offset[1])))
+        ny = (self.mask.overlap_area(roid.mask, (offset[0], offset[1] + 1)) - 
+                self.mask.overlap_area(roid.mask, (offset[0], offset[1] - 1)))
+        
+        print(ny)
+        print(nx)
+
+        nm = hypot(nx,ny)
+        nh = [nx/nm, ny/nm]
+    
         mom_1 = [vel_1[0] * m_1, vel_1[1] * m_1]
         mom_2 = [vel_2[0] * m_2, vel_2[1] * m_2]
 
-        mom_1fax = ((rhat_2[0] * mom_2[0]) +
-                (rhat_2[1] * mom_2[1])) * rhat_2[0]
-        mom_1fay = ((rhat_2[0] * mom_2[0]) +
-                (rhat_2[1] * mom_2[1])) * rhat_2[1]
+        mom_1fax = ((nh[0] * mom_2[0]) +
+                (nh[1] * mom_2[1])) * nh[0]
+        mom_1fay = ((nh[0] * mom_2[0]) +
+                (rhat_1[1] * mom_2[1])) * nh[1]
         mom_2fb = [mom_2[0] - mom_1fax, mom_2[1] - mom_1fay]
 
-        mom_2fax = ((rhat_1[0] * mom_1[0]) +
-                (rhat_1[1] * mom_1[1])) * rhat_1[0]
-        mom_2fay = ((rhat_1[0] * mom_1[0]) +
-                (rhat_1[1] * mom_1[1])) * rhat_1[1]
+        mom_2fax = ((-nh[0] * mom_1[0]) +
+                (-nh[1] * mom_1[1])) * -nh[0]
+        mom_2fay = ((rhat_2[0] * mom_1[0]) +
+                (nh[1] * mom_1[1])) * nh[1]
         mom_1fb = [mom_1[0] - mom_2fax, mom_1[1] - mom_2fay]
 
         mom_2f = [mom_2fb[0] + mom_2fax, mom_2fb[1] + mom_2fay]
@@ -144,6 +162,24 @@ class roid(game_object):
 
         roid.set_vel(vel_2f)
         self.set_vel(vel_1f)
-
+         
+        offset = [int(roid.loc[0]) -  int(self.loc[0]),
+                int(roid.loc[1]) - int(self.loc[1])]
+        offdist = hypot(offset[0], offset[1])
+        overlap = self.mask.overlap_area(roid.mask, offset)
+        if overlap > 1:
+            nx = (self.mask.overlap_area(roid.mask, (offset[0] + 1, offset[1])) -
+                    self.mask.overlap_area(roid.mask, (offset[0] - 1, offset[1])))
+            ny = (self.mask.overlap_area(roid.mask, (offset[0], offset[1] + 1)) - 
+                    self.mask.overlap_area(roid.mask, (offset[0], offset[1] - 1)))
+            
+            nm = hypot(nx,ny)
+    
+            nh = [nx/nm, ny/nm]
+    
+            if offdist < (self.radius + roid.radius):
+                over = self.radius + roid.radius - offdist
+                self.loc[0] = self.loc[0] + over * nh[0]
+                self.loc[1] = self.loc[1] + over * nh[1]
 
 
