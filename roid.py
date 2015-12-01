@@ -109,7 +109,7 @@ class roid(game_object):
         vel_1 = self.get_vel()
         vel_2 = roid.get_vel()
         cent_1 = self.get_cent()
-        cent_2 = self.get_cent()
+        cent_2 = roid.get_cent()
         rad_1 = self.get_rvect(point)
         rad_2 = roid.get_rvect(point)
         
@@ -118,29 +118,32 @@ class roid(game_object):
         offdist = hypot(offset[0], offset[1])
         
         overlap = self.mask.overlap_area(roid.mask, offset)
+	
+        vel_1f = [0, 0]
+        vel_2f = [0, 0]
 
         vel_1f[0] = vel_1[0] - ( (2 * m_2) / (m_1 + m_2) * ( (
             ( (vel_1[0] - vel_2[0]) * (cent_1[0] - cent_2[0]) ) + 
             ( (vel_1[1] - vel_2[1]) * (cent_1[1] - cent_2[1]) ) ) /
-            ( (pow(cent_1[0] - cent_2[0],2) + pow(cent_1[1] - cent_2[1]) ) ) ) *
+            ( (pow(cent_1[0] - cent_2[0] , 2) + pow(cent_1[1] - cent_2[1], 2) ) ) ) *
             (cent_1[0] - cent_2[0]) )
             
         vel_1f[1] = vel_1[1] - ( (2 * m_2) / (m_1 + m_2) * ( (
             ( (vel_1[0] - vel_2[0]) * (cent_1[0] - cent_2[0]) ) + 
             ( (vel_1[1] - vel_2[1]) * (cent_1[1] - cent_2[1]) ) ) /
-            ( (pow(cent_1[0] - cent_2[0],2) + pow(cent_1[1] - cent_2[1]) ) ) ) *
+            ( (pow(cent_1[0] - cent_2[0] , 2) + pow(cent_1[1] - cent_2[1], 2) ) ) ) *
             (cent_1[1] - cent_2[1]) )
         
         vel_2f[0] = vel_2[0] - ( (2 * m_1) / (m_2 + m_1) * ( (
             ( (vel_2[0] - vel_1[0]) * (cent_2[0] - cent_1[0]) ) + 
             ( (vel_2[1] - vel_1[1]) * (cent_2[1] - cent_1[1]) ) ) /
-            ( (pow(cent_2[0] - cent_1[0],2) + pow(cent_2[1] - cent_1[1]) ) ) ) *
+            ( (pow(cent_2[0] - cent_1[0] , 2) + pow(cent_2[1] - cent_1[1], 2) ) ) ) *
             (cent_2[0] - cent_1[0]) )
             
         vel_2f[1] = vel_2[1] - ( (2 * m_1) / (m_2 + m_1) * ( (
             ( (vel_2[0] - vel_1[0]) * (cent_2[0] - cent_1[0]) ) + 
             ( (vel_2[1] - vel_1[1]) * (cent_2[1] - cent_1[1]) ) ) /
-            ( (pow(cent_2[0] - cent_1[0],2) + pow(cent_2[1] - cent_1[1]) ) ) ) *
+            ( (pow(cent_2[0] - cent_1[0] , 2) + pow(cent_2[1] - cent_1[1, 2]) ) ) ) *
             (cent_2[1] - cent_1[1]) )
         
         vmag_1f = hypot(vel_1f[0], vel_1f[1])
