@@ -98,6 +98,8 @@ class roid(game_object):
         c = self.mask.centroid()
         angle_vector = [c[0] - point[0], c[1] - point[1]]
         return angle_vector
+    def get_cent(self):
+        return self.loc
 
     # Bouncy Asteroids!!! This function is designed to handle the elastic
     # collisions involved between two asteroids.
@@ -106,50 +108,40 @@ class roid(game_object):
         m_2 = roid.get_mass()
         vel_1 = self.get_vel()
         vel_2 = roid.get_vel()
-        vmag_1 = hypot(vel_1[0], vel_1[1])
-        vmag_2 = hypot(vel_1[0], vel_1[1])
+        cent_1 = self.get_cent()
+        cent_2 = self.get_cent()
         rad_1 = self.get_rvect(point)
-        rmag_1 = hypot(rad_1[0], rad_1[1])
-        rhat_1 = [rad_1[0] / rmag_1, rad_1[1] / rmag_1]
         rad_2 = roid.get_rvect(point)
-        rmag_2 = hypot(rad_2[0], rad_2[1])
-        rhat_2 = [rad_2[0] / rmag_2, rad_2[1] / rmag_2]
+        
         offset = [int(roid.loc[0]) -  int(self.loc[0]),
                 int(roid.loc[1]) - int(self.loc[1])]
         offdist = hypot(offset[0], offset[1])
+        
         overlap = self.mask.overlap_area(roid.mask, offset)
-        print(offdist)
-        nx = (self.mask.overlap_area(roid.mask, (offset[0] + 1, offset[1])) -
-                self.mask.overlap_area(roid.mask, (offset[0] - 1, offset[1])))
-        ny = (self.mask.overlap_area(roid.mask, (offset[0], offset[1] + 1)) - 
-                self.mask.overlap_area(roid.mask, (offset[0], offset[1] - 1)))
+
+        vel_1f[0] = vel_1[0] - ( (2 * m_2) / (m_1 + m_2) * ( (
+            ( (vel_1[0] - vel_2[0]) * (cent_1[0] - cent_2[0]) ) + 
+            ( (vel_1[1] - vel_2[1]) * (cent_1[1] - cent_2[1]) ) ) /
+            ( (pow(cent_1[0] - cent_2[0],2) + pow(cent_1[1] - cent_2[1]) ) ) ) *
+            (cent_1[0] - cent_2[0]) )
+            
+        vel_1f[1] = vel_1[1] - ( (2 * m_2) / (m_1 + m_2) * ( (
+            ( (vel_1[0] - vel_2[0]) * (cent_1[0] - cent_2[0]) ) + 
+            ( (vel_1[1] - vel_2[1]) * (cent_1[1] - cent_2[1]) ) ) /
+            ( (pow(cent_1[0] - cent_2[0],2) + pow(cent_1[1] - cent_2[1]) ) ) ) *
+            (cent_1[1] - cent_2[1]) )
         
-        print(ny)
-        print(nx)
-
-        nm = hypot(nx,ny)
-        nh = [nx/nm, ny/nm]
-    
-        mom_1 = [vel_1[0] * m_1, vel_1[1] * m_1]
-        mom_2 = [vel_2[0] * m_2, vel_2[1] * m_2]
-
-        mom_1fax = ((nh[0] * mom_2[0]) +
-                (nh[1] * mom_2[1])) * nh[0]
-        mom_1fay = ((nh[0] * mom_2[0]) +
-                (rhat_1[1] * mom_2[1])) * nh[1]
-        mom_2fb = [mom_2[0] - mom_1fax, mom_2[1] - mom_1fay]
-
-        mom_2fax = ((-nh[0] * mom_1[0]) +
-                (-nh[1] * mom_1[1])) * -nh[0]
-        mom_2fay = ((rhat_2[0] * mom_1[0]) +
-                (nh[1] * mom_1[1])) * nh[1]
-        mom_1fb = [mom_1[0] - mom_2fax, mom_1[1] - mom_2fay]
-
-        mom_2f = [mom_2fb[0] + mom_2fax, mom_2fb[1] + mom_2fay]
-        mom_1f = [mom_1fb[0] + mom_1fax, mom_1fb[1] + mom_1fay]
-        
-        vel_1f = [mom_1f[0] / m_1, mom_1f[1] / m_1]
-        vel_2f = [mom_2f[0] / m_2, mom_2f[1] / m_2]
+        vel_2f[0] = vel_2[0] - ( (2 * m_1) / (m_2 + m_1) * ( (
+            ( (vel_2[0] - vel_1[0]) * (cent_2[0] - cent_1[0]) ) + 
+            ( (vel_2[1] - vel_1[1]) * (cent_2[1] - cent_1[1]) ) ) /
+            ( (pow(cent_2[0] - cent_1[0],2) + pow(cent_2[1] - cent_1[1]) ) ) ) *
+            (cent_2[0] - cent_1[0]) )
+            
+        vel_2f[1] = vel_2[1] - ( (2 * m_1) / (m_2 + m_1) * ( (
+            ( (vel_2[0] - vel_1[0]) * (cent_2[0] - cent_1[0]) ) + 
+            ( (vel_2[1] - vel_1[1]) * (cent_2[1] - cent_1[1]) ) ) /
+            ( (pow(cent_2[0] - cent_1[0],2) + pow(cent_2[1] - cent_1[1]) ) ) ) *
+            (cent_2[1] - cent_1[1]) )
         
         vmag_1f = hypot(vel_1f[0], vel_1f[1])
         vmag_2f = hypot(vel_2f[0], vel_2f[1])
