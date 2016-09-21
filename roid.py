@@ -143,14 +143,16 @@ class roid(game_object):
         vel_2f[1] = vel_2[1] - ( (2 * m_1) / (m_2 + m_1) * ( (
             ( (vel_2[0] - vel_1[0]) * (cent_2[0] - cent_1[0]) ) + 
             ( (vel_2[1] - vel_1[1]) * (cent_2[1] - cent_1[1]) ) ) /
-            ( (pow(cent_2[0] - cent_1[0] , 2) + pow(cent_2[1] - cent_1[1, 2]) ) ) ) *
+            ( (pow(cent_2[0] - cent_1[0] , 2) + pow(cent_2[1] - cent_1[1], 2) ) ) ) *
             (cent_2[1] - cent_1[1]) )
         
+        vmag_1 = hypot(vel_1[0], vel_1[1])
+        vmag_2 = hypot(vel_2[0], vel_2[1])
         vmag_1f = hypot(vel_1f[0], vel_1f[1])
         vmag_2f = hypot(vel_2f[0], vel_2f[1])
 
         KE1 = m_1 * pow(vmag_1, 2) + m_2 * pow(vmag_2, 2)
-        KE2 = m_1 * pow(vmag_1f, 2) + m_2 * pow(vmag_2, 2)
+        KE2 = m_1 * pow(vmag_1f, 2) + m_2 * pow(vmag_2f, 2)
         
         print(KE1)
         print(KE2)
